@@ -12,8 +12,6 @@ Value2 = test2
 */
 
 #include <iostream>
-//#include <boost/property_tree/ptree.hpp>
-//#include <boost/property_tree/ini_parser.hpp>
 #include "cfg_data.h"
 
 // std::wstring -> std::string
@@ -41,9 +39,7 @@ void cfg_data::init(std::string cfg_file)
 	try
 	{
 		boost::property_tree::ini_parser::read_ini("config.ini", m_pt);
-		std::cout << "Read cfg file: " << cfg_file << std::endl;
-		std::cout << m_pt.get<std::string>("Section1.Value1") << std::endl;
-		std::cout << m_pt.get<std::string>("Section1.Value2") << std::endl;
+		std::cout << "Reading cfg file: " << cfg_file << std::endl;
 	}
 	catch (std::exception const& ex) {
 		std::cerr << ("Caught exception: %s", ex.what()) << std::endl;

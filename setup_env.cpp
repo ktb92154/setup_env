@@ -13,11 +13,9 @@ Issues: Code is more clunky then I'd like, unable to get createProcess to read a
 #include "stdafx.h"
 #include <Windows.h>
 #include <tchar.h>
-
 #include <iostream>       // std::cout
 #include <thread>         // std::thread
 #include "Shlwapi.h"
-//#include "../Win32Project1/ConsoleColor.h"
 #include "ConsoleColor/ConsoleColor.h"
 #include "cfg_data.h"
 
@@ -25,6 +23,9 @@ using namespace std;
 
 size_t ExecuteProcess(std::wstring FullPathToExe, std::wstring Parameters, size_t SecondsToWait)
 {
+	/* CreateProcess API initialization */
+	STARTUPINFOW siStartupInfo = { 0 };
+	PROCESS_INFORMATION piProcessInfo = { 0 };
 	size_t iMyCounter = 0, iReturnVal = 0, iPos = 0;
 	DWORD dwExitCode = 0;
 	std::wstring sTempStr = L"";
@@ -55,21 +56,13 @@ size_t ExecuteProcess(std::wstring FullPathToExe, std::wstring Parameters, size_
 	const wchar_t* pchrTemp = Parameters.c_str();
 	wcscpy_s(pwszParam, Parameters.size() + 1, pchrTemp);
 
-	/* CreateProcess API initialization */
-	STARTUPINFOW siStartupInfo;
-	PROCESS_INFORMATION piProcessInfo;
-	/*
-	PROCESS_INFORMATION has these members
-	HANDLE hProcess;   // process handle
-	HANDLE hThread;    // primary thread handle
-	DWORD dwProcessId; // process PID
-	DWORD dwThreadId;  // thread ID
-	*/
 	memset(&siStartupInfo, 0, sizeof(siStartupInfo));
 	memset(&piProcessInfo, 0, sizeof(piProcessInfo));
 	siStartupInfo.cb = sizeof(siStartupInfo);
+
 	std::cout << green << "Main process: " << piProcessInfo.dwProcessId << white << std::endl;
-	if (CreateProcessW(const_cast<LPCWSTR>(FullPathToExe.c_str()),
+
+	BOOL result = CreateProcessW(const_cast<LPCWSTR>(FullPathToExe.c_str()),
 		pwszParam,      // Command line
 		0,              // Process handle not inheritable
 		0,              // Thread handle not inheritable
@@ -80,18 +73,23 @@ size_t ExecuteProcess(std::wstring FullPathToExe, std::wstring Parameters, size_
 		0,              // Use parent's starting directory 
 		&siStartupInfo, // Pointer to STARTUPINFO structure
 		&piProcessInfo  // Pointer to PROCESS_INFORMATION structure
-		) != false)
+		);
+
+	if(result)
 	{
 		/* Watch the process. */
-		std::cout << green << "Created process: " << piProcessInfo.dwProcessId << ", succeeded." << white << std::endl;
+		DWORD pid = GetProcessId(piProcessInfo.hProcess);
+		//std::cout << green << "Created PID: " << pid << " for " << wstrTostr(FullPathToExe.c_str()) << white << std::endl;
+		std::cout << green << "Created PID: " << pid << white << std::endl;
+
+		//dwExitCode = WaitForSingleObject(piProcessInfo.hProcess, INFINITE);
 		dwExitCode = WaitForSingleObject(piProcessInfo.hProcess, (SecondsToWait * 1000));
-		std::cout << green << "Ended process: " << piProcessInfo.hProcess << ", succeeded." << white << std::endl;
 	}
 	else
 	{
 		/* CreateProcess failed */
 		iReturnVal = GetLastError();
-		std::cout << red << "Create process failed: " << iReturnVal << white << std::endl;
+		std::cout << red << "Create new PID failed: " << iReturnVal << white << std::endl;
 	}
 
 	/* Free memory */
@@ -104,43 +102,41 @@ size_t ExecuteProcess(std::wstring FullPathToExe, std::wstring Parameters, size_
 
 	return iReturnVal;
 }
+struct HelloWorld
+{
+	void operator()() const
+	{
+		std::cout << "Hello, World!" << std::endl;
+	}
+};
 
 
 int main()
 {
 
+	// Signal with no arguments and a void return value
+	// WORKS
+	/*boost::signals2::signal<void()> sig;
+
+	// Connect a HelloWorld slot
+	HelloWorld hello;
+	sig.connect(hello);
+
+	// Call all of the slots
+	sig();*/ //simple boost signals2 test
+	
+
 	// Initialize and read configuration file for dir paths
 	cfg_data cfg("config.ini");
-
-	LPWSTR paths[2] = { L"W:\\!Amazing_Tools\\RemoteDLLInjector\\RemoteDll32.exe", L"W:\\!Amazing_Tools\\RemoteDLLInjector\\Winmine__XP.exe"};
-	LPWSTR * p;
-	p = paths;
-	//wchar_t exe_path[] = L"W:\\!Amazing_Tools\\RemoteDLLInjector\\Winmine__XP.exe";
-
-	STARTUPINFO si;
-	PROCESS_INFORMATION pi;
-
-	ZeroMemory(&si, sizeof(si));
-	si.cb = sizeof(si);
-	ZeroMemory(&pi, sizeof(pi));
-	
+		
 	std::wstring program = cfg.wget("Paths.Minesweeper"); // WORKS!
 
-	ExecuteProcess(program, L"", 10); // WORKS
-    //ExecuteProcess(L"C:\\Python27\\python.exe", L"", 100); // WORKS
+	ExecuteProcess(program, L"", 1); // WORKS
 		
-	 // use L"" prefix for wide chars
-	//swprintf_s(injector_path, 10, L"%d", pid); // use L"" prefix for wide chars
-	//MessageBox(NULL, injector_path, L"TEST", MB_OK);
+	std::wstring dll = cfg.wget("Paths.Dll"); // WORKS!
+	ExecuteProcess(dll, L"", 1); // WORKS
 	
-	// **** Works to combine two wchar_t ****
-	//wchar_t* c;
-	//c = wcscat(injector_path, dll_path);
-	// **** end works ****
-
-	std::wstring dll = cfg.wget("Paths.Dll2"); // WORKS!
-	ExecuteProcess(dll, L"", 10); // WORKS
-	
+	std::cout << red << "Press any key to exit terminal" << white << std::endl;
 	std::cin.get();
 
 	return 0;
