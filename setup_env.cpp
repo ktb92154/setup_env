@@ -16,7 +16,7 @@ Issues: Code is more clunky then I'd like, unable to get createProcess to read a
 #include <iostream>       // std::cout
 #include <thread>         // std::thread
 #include "Shlwapi.h"
-#include "ConsoleColor/ConsoleColor.h"
+#include "../tools_ktb/ConsoleColor.h"
 #include "cfg_data.h"
 
 using namespace std;

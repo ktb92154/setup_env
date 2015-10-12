@@ -5,9 +5,9 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "setup_env", "setup_env.vcxproj", "{3DBAD79E-A80F-4DCC-AF83-AC740999E43A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleColor", "ConsoleColor\ConsoleColor.vcxproj", "{8E508520-0BB3-41F2-B540-1B26AC2FE617}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "basic_dll_inject_with_msg_KTB", "..\Win32Project1\Win32Project1.vcxproj", "{21A942CA-9032-4440-A601-74649B6A0E8A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tools_ktb", "..\tools_ktb\tools_ktb.vcxproj", "{66539E89-0DCB-443C-BFED-C5CB303D345C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,16 +27,6 @@ Global
 		{3DBAD79E-A80F-4DCC-AF83-AC740999E43A}.Release|x64.ActiveCfg = Release|Win32
 		{3DBAD79E-A80F-4DCC-AF83-AC740999E43A}.Release|x86.ActiveCfg = Release|Win32
 		{3DBAD79E-A80F-4DCC-AF83-AC740999E43A}.Release|x86.Build.0 = Release|Win32
-		{8E508520-0BB3-41F2-B540-1B26AC2FE617}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{8E508520-0BB3-41F2-B540-1B26AC2FE617}.Debug|x64.ActiveCfg = Debug|x64
-		{8E508520-0BB3-41F2-B540-1B26AC2FE617}.Debug|x64.Build.0 = Debug|x64
-		{8E508520-0BB3-41F2-B540-1B26AC2FE617}.Debug|x86.ActiveCfg = Debug|Win32
-		{8E508520-0BB3-41F2-B540-1B26AC2FE617}.Debug|x86.Build.0 = Debug|Win32
-		{8E508520-0BB3-41F2-B540-1B26AC2FE617}.Release|Any CPU.ActiveCfg = Release|Win32
-		{8E508520-0BB3-41F2-B540-1B26AC2FE617}.Release|x64.ActiveCfg = Release|x64
-		{8E508520-0BB3-41F2-B540-1B26AC2FE617}.Release|x64.Build.0 = Release|x64
-		{8E508520-0BB3-41F2-B540-1B26AC2FE617}.Release|x86.ActiveCfg = Release|Win32
-		{8E508520-0BB3-41F2-B540-1B26AC2FE617}.Release|x86.Build.0 = Release|Win32
 		{21A942CA-9032-4440-A601-74649B6A0E8A}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{21A942CA-9032-4440-A601-74649B6A0E8A}.Debug|x64.ActiveCfg = Debug|Win32
 		{21A942CA-9032-4440-A601-74649B6A0E8A}.Debug|x86.ActiveCfg = Debug|Win32
@@ -45,6 +35,16 @@ Global
 		{21A942CA-9032-4440-A601-74649B6A0E8A}.Release|x64.ActiveCfg = Release|Win32
 		{21A942CA-9032-4440-A601-74649B6A0E8A}.Release|x86.ActiveCfg = Release|Win32
 		{21A942CA-9032-4440-A601-74649B6A0E8A}.Release|x86.Build.0 = Release|Win32
+		{66539E89-0DCB-443C-BFED-C5CB303D345C}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{66539E89-0DCB-443C-BFED-C5CB303D345C}.Debug|x64.ActiveCfg = Debug|x64
+		{66539E89-0DCB-443C-BFED-C5CB303D345C}.Debug|x64.Build.0 = Debug|x64
+		{66539E89-0DCB-443C-BFED-C5CB303D345C}.Debug|x86.ActiveCfg = Debug|Win32
+		{66539E89-0DCB-443C-BFED-C5CB303D345C}.Debug|x86.Build.0 = Debug|Win32
+		{66539E89-0DCB-443C-BFED-C5CB303D345C}.Release|Any CPU.ActiveCfg = Release|Win32
+		{66539E89-0DCB-443C-BFED-C5CB303D345C}.Release|x64.ActiveCfg = Release|x64
+		{66539E89-0DCB-443C-BFED-C5CB303D345C}.Release|x64.Build.0 = Release|x64
+		{66539E89-0DCB-443C-BFED-C5CB303D345C}.Release|x86.ActiveCfg = Release|Win32
+		{66539E89-0DCB-443C-BFED-C5CB303D345C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
