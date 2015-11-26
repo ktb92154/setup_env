@@ -14,12 +14,32 @@ Issues: Code is more clunky then I'd like, unable to get createProcess to read a
 #include <Windows.h>
 #include <tchar.h>
 #include <iostream>       // std::cout
-#include <thread>         // std::thread
+//#include <thread>         // std::thread
+#include <boost/thread.hpp>
+#include <boost/signals2.hpp>
+
 #include "Shlwapi.h"
 #include "../tools_ktb/ConsoleColor.h"
+#include "../tools_ktb/pubsub.h"
 #include "cfg_data.h"
+//#include "../tools_ktb/cfg_tool.h"
 
+#include <boost/interprocess/windows_shared_memory.hpp>
+#include <utility>
+#include <boost/interprocess/mapped_region.hpp>
+#include <cstring>
+#include <cstdlib>
+#include <string>
+#include <boost/interprocess/managed_shared_memory.hpp>
+#include <boost/interprocess/offset_ptr.hpp>
+#include <boost/interprocess/file_mapping.hpp>
+#include <iostream>
+#include <fstream>
+#include <cstddef>
+#include <cstdio>    //std::remove
+#include <vector>
 using namespace std;
+using namespace boost::interprocess;
 
 size_t ExecuteProcess(std::wstring FullPathToExe, std::wstring Parameters, size_t SecondsToWait)
 {
@@ -84,6 +104,8 @@ size_t ExecuteProcess(std::wstring FullPathToExe, std::wstring Parameters, size_
 
 		//dwExitCode = WaitForSingleObject(piProcessInfo.hProcess, INFINITE);
 		dwExitCode = WaitForSingleObject(piProcessInfo.hProcess, (SecondsToWait * 1000));
+
+
 	}
 	else
 	{
@@ -102,30 +124,24 @@ size_t ExecuteProcess(std::wstring FullPathToExe, std::wstring Parameters, size_
 
 	return iReturnVal;
 }
-struct HelloWorld
-{
-	void operator()() const
-	{
-		std::cout << "Hello, World!" << std::endl;
-	}
-};
 
+void print_quotient(float x, float y)
+{
+	std::cout << "The quotient is " << x / y << std::endl;
+}
+
+void print_string(std::string x)
+{
+	std::cout << "The string is " << x << std::endl;
+}
 
 int main()
 {
-
 	// Signal with no arguments and a void return value
-	// WORKS
-	/*boost::signals2::signal<void()> sig;
+	boost::signals2::signal<void(float, float)> sig2;
+	sig2.connect(&print_quotient);
 
-	// Connect a HelloWorld slot
-	HelloWorld hello;
-	sig.connect(hello);
-
-	// Call all of the slots
-	sig();*/ //simple boost signals2 test
-	
-
+	sig2(5., 3.);
 	// Initialize and read configuration file for dir paths
 	cfg_data cfg("config.ini");
 		
@@ -135,10 +151,50 @@ int main()
 		
 	std::wstring dll = cfg.wget("Paths.Dll"); // WORKS!
 	ExecuteProcess(dll, L"", 1); // WORKS
-	
+
+		using namespace boost::interprocess;
+		typedef std::pair<double, int> MyType;
+
+		try {
+			//An special shared memory where we can
+			//construct objects associated with a name.
+			//First remove any old shared memory of the same name, create 
+			//the shared memory segment and initialize needed resources
+			shared_memory_object::remove("MySharedMemory");
+			managed_shared_memory segment
+				//create       segment name    segment size
+				(create_only, "MySharedMemory", 65536);
+
+			//Create an object of MyType initialized to {0.0, 0}
+			MyType *instance = segment.construct<MyType>
+				("MyType instance")  //name of the object
+				(0.0, 0);            //ctor first argument
+
+									 //Create an array of 10 elements of MyType initialized to {0.0, 0}
+			MyType *array = segment.construct<MyType>
+				("MyType array")     //name of the object
+				[10]                 //number of elements
+			(0.0, 0);            //Same two ctor arguments for all objects
+
+								 //Create an array of 3 elements of MyType initializing each one
+								 //to a different value {0.0, 0}, {1.0, 1}, {2.0, 2}...
+			float float_initializer[3] = { 0.0, 1.0, 2.0 };
+			int   int_initializer[3] = { 0, 1, 2 };
+
+			MyType *array_it = segment.construct_it<MyType>
+				("MyType array from it")   //name of the object
+				[3]                        //number of elements
+			(&float_initializer[0]    //Iterator for the 1st ctor argument
+				, &int_initializer[0]);    //Iterator for the 2nd ctor argument
+		}
+		catch (...) {
+			shared_memory_object::remove("MySharedMemory");
+			throw;
+		}
+
 	std::cout << red << "Press any key to exit terminal" << white << std::endl;
 	std::cin.get();
-
+	shared_memory_object::remove("MySharedMemory");
 	return 0;
 }
 
